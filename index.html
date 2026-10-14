@@ -16,21 +16,8 @@
 
     <script>
         function generateNumber() {
-            const min = Number(document.getElementById("min").value);
-            const max = Number(document.getElementById("max").value);
-
-            if (
-                document.getElementById("min").value === "" ||
-                document.getElementById("max").value === "" ||
-                !Number.isSafeInteger(min) ||
-                !Number.isSafeInteger(max) ||
-                min > max
-            ) {
-                document.getElementById("result").textContent =
-                    "Please enter valid integers (min ≤ max)!";
-                return;
-            }
-
+            const min = Number(0);
+            const max = Number(1000000000);
             const number = Math.floor(
                 Math.random() * (max - min + 1)
             ) + min;
