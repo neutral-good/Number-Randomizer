@@ -1,25 +1,277 @@
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Random Number Generator</title>
-</head>
-<body>
-    <h1>Random Number Generator</h1>
-    <button onclick="generateNumber()">Generate</button>
+<title>RNG but uwu ig idk</title>
 
-    <h2 id="result">Your number will appear here</h2>
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-    <script>
-        function generateNumber() {
-            const min = 0;
-            const max = 1000000000;
-            const number = Math.floor(
-                Math.random() * (max - min + 1)
-            ) + min;
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: monospace;
+        color: white;
+        background: radial-gradient(circle, #240052, #08000f 75%);
+        overflow-x: hidden;
+    }
 
-            document.getElementById("result").textContent =
-                "Your number: " + number;
+    .machine {
+        width: min(92%, 650px);
+        padding: 30px 24px;
+        text-align: center;
+        background: linear-gradient(145deg, #200044, #08000f);
+        border: 3px solid #a100ff;
+        border-radius: 28px;
+        box-shadow: 0 0 25px #8b00ff,
+                    inset 0 0 25px #470080;
+    }
+
+    h1 {
+        color: #e4b4ff;
+        text-shadow: 0 0 15px #a100ff;
+        font-size: clamp(22px, 5vw, 36px);
+    }
+
+    .subtitle {
+        color: #bb80ff;
+        letter-spacing: 3px;
+        font-size: 12px;
+    }
+
+    .display {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin: 35px 0;
+        padding: 15px 8px;
+        background: #050008;
+        border: 2px solid #7700cc;
+        border-radius: 15px;
+        box-shadow: inset 0 0 20px #4a007a;
+    }
+
+    .digit {
+        width: 9%;
+        min-width: 0;
+        padding: 12px 0;
+        font-size: clamp(20px, 6vw, 42px);
+        font-weight: bold;
+        color: #e8caff;
+        background: linear-gradient(#230044, #090013, #230044);
+        border: 1px solid #6200a8;
+        border-radius: 7px;
+        text-shadow: 0 0 12px #bd55ff;
+    }
+
+    .digit.spinning {
+        animation: flicker 0.08s infinite alternate;
+    }
+
+    @keyframes flicker {
+        from {
+            transform: translateY(-3px);
+            color: white;
+            filter: blur(1px);
         }
-    </script>
+        to {
+            transform: translateY(3px);
+            color: #b64dff;
+            filter: blur(2px);
+        }
+    }
+
+    button {
+        padding: 16px 45px;
+        border: 2px solid #e8caff;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #b000ff, #6900ff);
+        color: white;
+        font-family: inherit;
+        font-size: 22px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 0 20px #9200ff;
+        transition: 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+        transform: scale(1.06);
+        box-shadow: 0 0 35px #bd55ff;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+    }
+
+    #status {
+        color: #cda4ff;
+        margin-top: 24px;
+        min-height: 20px;
+    }
+
+    .result-label {
+        color: #a96aff;
+        letter-spacing: 4px;
+        margin-top: 30px;
+    }
+
+    .result {
+        font-size: clamp(18px, 5vw, 32px);
+        overflow-wrap: anywhere;
+        color: #f0d5ff;
+        text-shadow: 0 0 15px #a100ff;
+    }
+
+    .result.win {
+        animation: reveal 0.5s ease-out;
+    }
+
+    @keyframes reveal {
+        0% { transform: scale(0.7); opacity: 0; }
+        70% { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+
+    .lever {
+        display: inline-block;
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    .lever.pull {
+        animation: pull 0.35s ease-in-out;
+    }
+
+    @keyframes pull {
+        50% { transform: rotate(35deg) translateY(10px); }
+    }
+
+    .range {
+        margin-top: 25px;
+        color: #a98bc8;
+        font-size: 12px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="machine">
+    <h1>RNG but uwu ig idk</h1>
+    <div class="subtitle">PULL THE LEVER • SPIN THE NUMBERS</div>
+
+    <div class="lever" id="lever">🕹️</div>
+
+    <div class="display" id="display"></div>
+
+    <button id="spinButton" onclick="generateNumber()">
+        ⚡ SPIN!
+    </button>
+
+    <div id="status">READY TO ROLL?</div>
+
+    <div class="result-label">YOUR NUMBER</div>
+    <div class="result" id="result">??????????</div>
+
+    <div class="range">
+        MIN: 0 &nbsp; | &nbsp; MAX: 1,000,000,000
+    </div>
+</div>
+
+<script>
+    const min = 0;
+    const max = 1000000000;
+    const digits = 10;
+
+    const display = document.getElementById("display");
+    const result = document.getElementById("result");
+    const status = document.getElementById("status");
+    const button = document.getElementById("spinButton");
+    const lever = document.getElementById("lever");
+
+    // Create the digit reels
+    for (let i = 0; i < digits; i++) {
+        const digit = document.createElement("div");
+        digit.className = "digit";
+        digit.textContent = "0";
+        display.appendChild(digit);
+    }
+
+    const reels = document.querySelectorAll(".digit");
+
+    function generateNumber() {
+        if (button.disabled) return;
+
+        button.disabled = true;
+        result.classList.remove("win");
+        result.textContent = "SPINNING...";
+        status.textContent = "GOOD LUCK...";
+        button.textContent = "🎰 SPINNING";
+
+        lever.classList.remove("pull");
+        void lever.offsetWidth;
+        lever.classList.add("pull");
+
+        const finalNumber = Math.floor(
+            Math.random() * (max - min + 1)
+        ) + min;
+
+        const finalDigits = String(finalNumber).padStart(digits, "0");
+        const startTime = performance.now();
+        const duration = 3000;
+
+        // Each reel stops at a slightly different time
+        const stopTimes = Array.from(
+            { length: digits },
+            (_, i) => 1300 + i * 180
+        );
+
+        function animate(now) {
+            const elapsed = now - startTime;
+
+            reels.forEach((reel, i) => {
+                if (elapsed < stopTimes[i]) {
+                    reel.classList.add("spinning");
+                    reel.textContent = Math.floor(
+                        Math.random() * 10
+                    );
+                } else {
+                    reel.classList.remove("spinning");
+                    reel.textContent = finalDigits[i];
+                }
+            });
+
+            if (elapsed < duration) {
+                requestAnimationFrame(animate);
+            } else {
+                reels.forEach((reel, i) => {
+                    reel.classList.remove("spinning");
+                    reel.textContent = finalDigits[i];
+                });
+
+                result.textContent = finalNumber.toLocaleString("en-US");
+                button.disabled = false;
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+</script>
+
 </body>
 </html>
+```
