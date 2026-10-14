@@ -5,19 +5,14 @@
 </head>
 <body>
     <h1>Random Number Generator</h1>
-
-    <label for="min">Minimum:0>
-
-    <label for="max">Maximum:1000000000>
-
-    <button onclick="generateNumber()">Generate!</button>
+    <button onclick="generateNumber()">Generate</button>
 
     <h2 id="result">Your number will appear here</h2>
 
     <script>
         function generateNumber() {
-            const min = Number(0);
-            const max = Number(1000000000);
+            const min = 0;
+            const max = 1000000000;
             const number = Math.floor(
                 Math.random() * (max - min + 1)
             ) + min;
