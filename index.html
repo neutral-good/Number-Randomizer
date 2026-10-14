@@ -172,9 +172,6 @@
 <div class="machine">
     <h1>RNG but uwu ig idk</h1>
     <div class="subtitle">PULL THE LEVER • SPIN THE NUMBERS</div>
-
-    <div class="lever" id="lever">🕹️</div>
-
     <div class="display" id="display"></div>
 
     <button id="spinButton" onclick="generateNumber()">
@@ -231,9 +228,8 @@
 
         const finalDigits = String(finalNumber).padStart(digits, "0");
         const startTime = performance.now();
-        const duration = 3000;
+        const duration = 7500;
 
-        // Each reel stops at a slightly different time
         const stopTimes = Array.from(
             { length: digits },
             (_, i) => 1300 + i * 180
@@ -273,4 +269,3 @@
 
 </body>
 </html>
-```
